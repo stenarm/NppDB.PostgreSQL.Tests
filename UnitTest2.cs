@@ -1,20 +1,9 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Odbc;
-using System.Diagnostics;
 using System.IO;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Testcontainers.PostgreSql;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NppDB.PostgreSQL.Tests
 {
@@ -30,19 +19,30 @@ namespace NppDB.PostgreSQL.Tests
         [Fact]
         public void Test2()
         {
-            PostgreSQLExecutor postgreSQLExecutor = new PostgreSQLExecutor(null);
+            PostgreSQLExecutor executor = new PostgreSQLExecutor(null);
             List<string> sqlQueries = new List<string>();
-            //using (var sr = new StreamReader("Resources/queries.sql"))
-            using (var sr = new StreamReader("Resources/ITI0207_hindamissysteem_PostgreSQL_s2023_ver2.sql"))
+
+            using (var sr = new StreamReader("Resources/postgreSQLQueriesAndErrors.json"))
             {
-                String line;
-                while ((line = sr.ReadToEnd()) != "")
+                String jsonString;
+                while ((jsonString = sr.ReadToEnd()) != "")
                 {
-                    if (!String.IsNullOrEmpty(line))
+                    List<QueryAndErrors> queriesAndErrors = JsonConvert.DeserializeObject<List<QueryAndErrors>>(jsonString);
+                    foreach (var queryAndErrors in queriesAndErrors)
                     {
-                        output.WriteLine(line);
-                        Comm.ParserResult parserResult = postgreSQLExecutor.Parse(line, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
-                        output.WriteLine(parserResult.Errors.Count.ToString());
+                        output.WriteLine(queryAndErrors.Query);
+                        Comm.ParserResult parserResult = executor.Parse(queryAndErrors.Query, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
+                        List<Comm.ParserWarning> warnings = new List<Comm.ParserWarning>();
+                        foreach (var command in parserResult.Commands)
+                        {
+                            warnings.AddRange(command.Warnings);
+                        }
+                        foreach (var error in queryAndErrors.Errors)
+                        {
+                            output.WriteLine(error);
+                            Assert.Contains(warnings, warning => warning.Type.ToString().Equals(error));
+                        }
+                        output.WriteLine("");
                     }
                 }
             }

@@ -55,7 +55,7 @@ namespace NppDB.PostgreSQL.Tests
             };
             Comm.ISQLExecutor executor = connect.CreateSQLExecutor();
             //List<string> sqlQueries = new List<string>();
-            using (var sr = new StreamReader("Resources/ITI0207_hindamissysteem_PostgreSQL_s2023_ver2.sql"))
+            using (var sr = new StreamReader("Resources/queries.sql"))
             {
                 //String line;
                 //while ((line = sr.ReadLine()) != null)

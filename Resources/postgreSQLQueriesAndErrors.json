@@ -1,0 +1,57 @@
+[
+  {
+    "Query": "SELECT * FROM hotell where nimi = \"Viru\";",
+    "Errors": [
+      "DOUBLE_QUOTES"
+    ]
+  },
+  {
+    "Query": "SELECT DISTINCT nimi FROM hotell GROUP BY NIMI;",
+    "Errors": [
+      "DISTINCT_KEYWORD_WITH_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM hotell h JOIN reserveerimine r ON r.hotelli_nr = h.hotelli_nr JOIN külaline k ON k.külalise_nr = r.külalise_nr;",
+    "Errors": [
+      "SELECT_ALL_WITH_MULTIPLE_JOINS"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum UNION SELECT * FROM Ruum_koopia;",
+    "Errors": [
+      "SELECT_ALL_IN_UNION_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(Reserveerimine.hotelli_nr) AS arv FROM Reserveerimine RIGHT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr;",
+    "Errors": [
+      "AGGREGATE_FUNCTION_WITHOUT_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(Reserveerimine.hotelli_nr) AS arv FROM Reserveerimine LEFT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr GROUP BY Hotell.hotelli_nr, nimi;",
+    "Errors": [
+      "COUNT_FUNCTION_WITH_OUTER_JOIN"
+    ]
+  },
+  {
+    "Query": "SELECT hotelli_nr, ruumi_nr, Count(külalise_nr) as külalineCount from Reserveerimine group by hotelli_nr;",
+    "Errors": [
+      "MISSING_COLUMN_IN_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "INSERT INTO Hotell VALUES (999, 'TOP', 'Tallinn');",
+    "Errors": [
+      "INSERT_STATEMENT_WITHOUT_COLUMN_NAMES"
+    ]
+  },
+  {
+    "Query": "INSERT INTO Külaline_koopia SELECT * FROM Külaline;",
+    "Errors": [
+      "SELECT_ALL_IN_INSERT_STATEMENT",
+      "INSERT_STATEMENT_WITHOUT_COLUMN_NAMES"
+    ]
+  }
+]
