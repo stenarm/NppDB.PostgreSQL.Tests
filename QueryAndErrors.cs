@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace NppDB.PostgreSQL.Tests
@@ -11,7 +12,7 @@ namespace NppDB.PostgreSQL.Tests
 
         public override string ToString()
         {
-            return "Query: " + Query + ".\nExpected errors: " + String.Join(", ", Errors.ToArray()); ;
+            return "Query: " + Query + "\nExpected errors: " + String.Join(", ", Errors.OrderBy(e => e).ToList()); ;
         }
     }
 }

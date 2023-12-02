@@ -24,7 +24,7 @@
     ]
   },
   {
-    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(Reserveerimine.hotelli_nr) AS arv FROM Reserveerimine RIGHT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr;",
+    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(Reserveerimine.hotelli_nr) AS arv FROM Reserveerimine JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr;",
     "Errors": [
       "AGGREGATE_FUNCTION_WITHOUT_GROUP_BY_CLAUSE"
     ]
@@ -71,6 +71,59 @@
     "Errors": [
       "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE",
       "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell HAVING linn = 'Tallinn' OR 'Tartu' OR hind BETWEEN 8 AND 9;",
+    "Errors": [
+      "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION",
+      "NOT_LOGICAL_OPERAND"
+    ]
+  },
+  {
+    "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY Count(*);",
+    "Errors": [
+      "AGGREGATE_FUNCTION_IN_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT linn, nimi as linn AS arv FROM Hotell;",
+    "Errors": [
+      "DUPLICATE_SELECTED_COLUMN_IN_SELECT_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn = 'Tallinn' OR 'Tartu' OR hind BETWEEN 8 AND 9;",
+    "Errors": [
+      "NOT_LOGICAL_OPERAND"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp, sum(hind) FROM ruum WHERE (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2) GROUP BY ruumi_tüüp, hind;",
+    "Errors": [
+      "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine WHERE Count(*) > 1;",
+    "Errors": [
+      "AGGREGATE_FUNCTION_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * from Hotell where nimi = 'nimi' and where linn='Tallinn';",
+    "Errors": [
+      "MULTIPLE_WHERE_USED"
+    ]
+  },
+  {
+    "Query": "SELECT nimi, (SELECT max(hind) FROM ruum where ruum.hotelli_nr = Hotell.hotelli_nr) from Hotell where nimi = 'Viru' and linn='Tallinn';",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT nimi, 'ilus', linn FROM Hotell;",
+    "Errors": [
+      "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
     ]
   }
 ]

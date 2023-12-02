@@ -33,16 +33,17 @@ namespace NppDB.PostgreSQL.Tests
                     {
                         output.WriteLine(queryAndErrors.ToString());
                         Comm.ParserResult parserResult = executor.Parse(queryAndErrors.Query, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
-                        List<Comm.ParserWarning> warnings = new List<Comm.ParserWarning>();
+                        List<String> warnings = new List<String>();
                         foreach (var command in parserResult.Commands)
                         {
-                            warnings.AddRange(command.Warnings);
+                            foreach (var warning in command.Warnings)
+                            {
+                                warnings.Add(warning.Type.ToString());
+                            }
                         }
-                        output.WriteLine("Errors present: " + String.Join(", ", warnings.Select(c => c.Type.ToString()).ToArray()));
-                        foreach (var error in queryAndErrors.Errors)
-                        {
-                            Assert.Contains(warnings, warning => warning.Type.ToString().Equals(error));
-                        }
+                        warnings = warnings.OrderBy(w => w).ToList();
+                        output.WriteLine("Errors present: " + String.Join(", ", warnings)); 
+                        Assert.True(warnings.SequenceEqual(queryAndErrors.Errors.OrderBy(e => e).ToList()));
                         output.WriteLine("");
                     }
                 }
