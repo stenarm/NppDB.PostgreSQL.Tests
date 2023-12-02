@@ -53,5 +53,24 @@
       "SELECT_ALL_IN_INSERT_STATEMENT",
       "INSERT_STATEMENT_WITHOUT_COLUMN_NAMES"
     ]
+  },
+  {
+    "Query": "SELECT nimi FROM Külaline ORDER BY 1",
+    "Errors": [
+      "ORDERING_BY_ORDINAL"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING hind > 10;",
+    "Errors": [
+      "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp, sum(hind) FROM ruum GROUP BY ruumi_tüüp, hind HAVING (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2);",
+    "Errors": [
+      "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE",
+      "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
+    ]
   }
 ]
