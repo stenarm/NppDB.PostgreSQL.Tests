@@ -67,7 +67,7 @@
     ]
   },
   {
-    "Query": "SELECT ruumi_tüüp, sum(hind) FROM ruum GROUP BY ruumi_tüüp, hind HAVING (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2);",
+    "Query": "SELECT ruumi_tüüp, sum(hind) AS summa FROM ruum GROUP BY ruumi_tüüp, hind HAVING (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2);",
     "Errors": [
       "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE",
       "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
@@ -99,7 +99,7 @@
     ]
   },
   {
-    "Query": "SELECT ruumi_tüüp, sum(hind) FROM ruum WHERE (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2) GROUP BY ruumi_tüüp, hind;",
+    "Query": "SELECT ruumi_tüüp, sum(hind) as summa FROM ruum WHERE (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2) GROUP BY ruumi_tüüp, hind;",
     "Errors": [
       "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE"
     ]
@@ -117,7 +117,7 @@
     ]
   },
   {
-    "Query": "SELECT nimi, (SELECT max(hind) FROM ruum where ruum.hotelli_nr = Hotell.hotelli_nr) from Hotell where nimi = 'Viru' and linn='Tallinn';",
+    "Query": "SELECT nimi, (SELECT max(hind) as maksimum FROM ruum where ruum.hotelli_nr = Hotell.hotelli_nr) from Hotell where nimi = 'Viru' and linn='Tallinn';",
     "Errors": []
   },
   {
@@ -162,6 +162,99 @@
     "Query": "SELECT * FROM Hotell WHERE hotelli_nr_1 IN (SELECT hotelli_nr_2 FROM Reserveerimine ORDER BY hotelli_nr_3);",
     "Errors": [
       "ORDER_BY_CLAUSE_IN_SUB_QUERY_WITHOUT_LIMIT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE ruumi_nr IN (SELECT * FROM Reserveerimine);",
+    "Errors": [
+      "SELECT_ALL_IN_SUB_QUERY"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr, id) IN (SELECT hotelli_nr, ruumi_nr FROM Reserveerimine);",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH",
+      "NOT_LOGICAL_OPERAND" // should fix if we have time
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn LIKE '%linn';",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn LIKE 'Tallinn';",
+    "Errors": [
+      "MISSING_WILDCARDS_IN_LIKE_EXPRESSION"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn SIMILAR TO 'b|d';",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn SIMILAR TO 'bd';",
+    "Errors": [
+      "MISSING_WILDCARDS_IN_LIKE_EXPRESSION"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn SIMILAR TO nimi;",
+    "Errors": [
+      "COLUMN_LIKE_COLUMN"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn = '%linn';",
+    "Errors": [
+      "EQUALITY_WITH_TEXT_PATTERN"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn = hotelli_nr;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn >= NULL;",
+    "Errors": [
+      "COMPARING_WITH_NULL"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn = NULL;",
+    "Errors": [
+      "EQUALITY_WITH_NULL"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn <> NULL;",
+    "Errors": [
+      "NOT_EQUALITY_WITH_NULL"
+    ]
+  },
+  {
+    "Query": "SELECT sum(hind)/count(*) AS keskmine FROM Ruum;",
+    "Errors": [
+      "USE_AVG_FUNCTION"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn LIKE nimi;",
+    "Errors": [
+      "COLUMN_LIKE_COLUMN"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr = ALL (SELECT hotelli_nr FROM Reserveerimine)",
+    "Errors": [
+      "EQUALS_ALL",
+      "NOT_LOGICAL_OPERAND" // should fix if we have time
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr <> ANY (SELECT hotelli_nr FROM Reserveerimine)",
+    "Errors": [
+      "NOT_EQUALS_ANY",
+      "NOT_LOGICAL_OPERAND" // should fix if we have time
     ]
   }
 ]
