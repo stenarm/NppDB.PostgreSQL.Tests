@@ -125,5 +125,43 @@
     "Errors": [
       "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
     ]
+  },
+  {
+    "Query": "SELECT nimi, (SELECT 'ilus' FROM ruum where ruum.hotelli_nr = Hotell.hotelli_nr) from Hotell where nimi = 'Viru' and linn='Tallinn' and ruumi_nr in (SELECT 1 FROM ruum where ruum.hotelli_nr = Hotell.hotelli_nr);",
+    "Errors": [
+      "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE",
+      "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT Sum(1) AS arv FROM Hotell",
+    "Errors": [
+      "USE_COUNT_FUNCTION"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_HAVING_CLAUSE",
+      "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
+    ]
+  },
+  //{
+  //  "Query": "SELECT * FROM Hotell JOIN Ruum ON x.id = y.id", // TODO figure out?
+  //  "Errors": [
+  //    "MISSING_EXPRESSION_IN_JOIN_CLAUSE"
+  //  ]
+  //},
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr_1 IN (SELECT hotelli_nr_2 FROM Reserveerimine ORDER BY hotelli_nr_3);",
+    "Errors": [
+      "ORDER_BY_CLAUSE_IN_SUB_QUERY_WITHOUT_LIMIT"
+    ]
   }
 ]
