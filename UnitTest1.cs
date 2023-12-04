@@ -54,61 +54,22 @@ namespace NppDB.PostgreSQL.Tests
                 Port = _postgreSqlContainer.GetMappedPublicPort("5432").ToString()
             };
             Comm.ISQLExecutor executor = connect.CreateSQLExecutor();
-            //List<string> sqlQueries = new List<string>();
             using (var sr = new StreamReader("Resources/queries.sql"))
             {
-                //String line;
-                //while ((line = sr.ReadLine()) != null)
-                //{
-                //    if (!String.IsNullOrEmpty(line)) 
-                //    {
-                //        sqlQueries.Add(line);
-                //    }
-                //}
                 String line;
                 while ((line = sr.ReadToEnd()) != "")
                 {
                     if (!String.IsNullOrEmpty(line))
                     {
-                        //output.WriteLine(line);
                         Comm.ParserResult parserResult = executor.Parse(line, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
                         output.WriteLine(parserResult.Commands.Count.ToString());
-                        //var commands = parserResult.Commands.Skip(parserResult.EnclosingCommandIndex).Take(1).Select(c => c.Text).ToList();
                         var commands = parserResult.Commands.Select(c => c.Text).ToList();
                         executor.Execute(commands, (results) =>
                         {
                             foreach (var result in results)
                             {
-                                if (result.Error != null)
-                                {
-                                    output.WriteLine(result.CommandText.ToString());
-                                    output.WriteLine(result.Error.ToString());
-                                }
-                                else
-                                {
-                                    output.WriteLine(result.CommandText.ToString());
-                                    output.WriteLine(result.RecordsAffected.ToString());
-                                    StringBuilder sbCol = new StringBuilder();
-                                    foreach (DataColumn col in result.QueryResult.Columns)
-                                    {
-                                        sbCol.Append(col.ColumnName);
-                                        sbCol.Append(',');
-                                    }
-                                    output.WriteLine(sbCol.ToString());
-                                    StringBuilder sb = new StringBuilder();
-                                    foreach (DataRow dataRow in result.QueryResult.Rows)
-                                    {
-                                        foreach (var item in dataRow.ItemArray)
-                                        {
-                                            sb.Append(item);
-                                            sb.Append(',');
-                                        }
-                                        sb.AppendLine();
-                                    }
-                                    output.WriteLine(sb.ToString());
-                                    //output.WriteLine(result.QueryResult.)
-                                }
-                                //Assert.Null(result.Error);
+                                output.WriteLine(result.CommandText.ToString());
+                                Assert.Null(result.Error);
                             }
                         });
                     }
