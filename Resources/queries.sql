@@ -410,3 +410,110 @@ COMMENT ON TRIGGER t_punktid_log_update ON Punktid IS 'Lausetaseme triger reagee
 kui tabelis Punktid muudeti olemasolevat rida.';
 
 COMMIT;
+
+/*Järgnevat on testitud PostgreSQL (16) andmebaasis.
+Keerukamate vaadete kaudu ei saa PostgreSQLis vaikimisi andmeid muuta.
+Vaade, mille kaudu saab andmebaasis vaikimisi andmeid muuta, peab põhinema ühel tabelil ja täitma ka muid reegleid.
+https://www.postgresqltutorial.com/postgresql-views/postgresql-updatable-views/
+Keerukamate vaadete kaudu andmete muutmise võimaldamiseks tuleks vaatega siduda DO INSTEAD reeglid või INSTEAD OF trigerid.
+
+Süsteemikataloogi vaate põhjal päringut tehes saab kontrollida, kas vaate kaudu saab andmeid muuta või mitte.
+
+Kui vaikimisi mittemuudetava vaatega siduda DO INSTEAD NOTHING reeglid, siis annab kontrollpäring ikkagi tulemuse, et vaade on muudetav.
+Selleks, et kontrollpäringu jaoks oleks is_updatable=YES, tuleb vaatega siduda DO INSTEAD reegel nii UPDATE kui DELETE lausete jaoks.
+*/
+
+CREATE TABLE Dept(deptno SMALLINT NOT NULL,
+dname VARCHAR(50) NOT NULL,
+CONSTRAINT pk_dept PRIMARY KEY (deptno));
+
+CREATE TABLE Emp(empno INTEGER NOT NULL,
+ename VARCHAR(50) NOT NULL,
+deptno SMALLINT NOT NULL,
+CONSTRAINT pk_emp PRIMARY KEY (empno),
+CONSTRAINT fk_emp_dept FOREIGN KEY (deptno) REFERENCES Dept(deptno) ON UPDATE CASCADE);
+
+INSERT INTO Dept (deptno, dname) 
+VALUES (10, 'Accounting');
+
+CREATE VIEW emps AS SELECT *
+FROM Dept INNER JOIN Emp USING (deptno);
+/*See on vaade, läbi mille ei saa PostgreSQLis vaikimisi andmeid muuta.*/
+
+/*Kasutan süsteemikataloogi päringut, et kontrollida, kas vaate kaudu saab andmeid muuta.*/
+SELECT table_schema AS schema, table_name AS view, is_insertable_into, is_updatable
+FROM Information_schema.views
+WHERE table_name='emps';
+
+/*is_insertable_into=NO ja is_updatable=NO*/
+
+CREATE OR REPLACE RULE emps_insert AS ON INSERT
+    TO Emps
+    DO INSTEAD INSERT INTO Emp(empno, ename, deptno)
+	VALUES (NEW.empno, NEW.ename, NEW.deptno);
+
+INSERT INTO Emps (empno, ename, deptno)
+VALUES (1, 'Smith', 10);
+/*Rea lisamine õnnestus. Lisati rida tabelisse Emp.*/
+
+/*is_insertable_into=YES ja is_updatable=NO*/
+
+CREATE OR REPLACE RULE emps_update AS ON UPDATE
+    TO Emps
+    DO INSTEAD UPDATE Emp SET
+        empno = NEW.empno,
+        ename = NEW.ename,
+        deptno = NEW.deptno;
+
+UPDATE Emps SET ename=Upper(ename);
+/*Muudatus õnnestus. Muudeti ridu tabelis Emp.*/
+
+/*is_insertable_into=YES ja is_updatable=NO*/
+
+CREATE OR REPLACE RULE emps_delete AS ON DELETE
+    TO Emps
+    DO INSTEAD DELETE FROM Emp WHERE empno=OLD.empno;
+
+DELETE FROM Emps;
+/*Kustutamine õnnestus. Kustutati read tabelist Emp.*/
+
+/*is_insertable_into=YES ja is_updatable=YES*/
+
+/*Kustutan reeglid.*/
+DROP RULE IF EXISTS emps_insert ON Emps;
+DROP RULE IF EXISTS emps_update ON Emps;
+DROP RULE IF EXISTS emps_delete ON Emps;
+
+INSERT INTO Emp (empno, ename, deptno)
+VALUES (2, 'Tree', 10);
+
+CREATE OR REPLACE RULE emps_insert AS ON INSERT
+TO Emps
+DO INSTEAD NOTHING;
+/*Reegel, et ridade lisamisel vaatesse ei tehtaks mitte midagi.*/
+
+INSERT INTO Emps (empno, ename, deptno)
+VALUES (1, 'Smith', 10);
+/*Rea lisamine ei anna veateadet, kuid tabelisse Emp ühtegi rida ei lisata.*/
+
+/*is_insertable_into=YES ja is_updatable=NO*/
+
+CREATE OR REPLACE RULE emps_update AS ON UPDATE
+TO Emps
+DO INSTEAD NOTHING;
+/*Reegel, et vaates ridade muutmisel ei tehtaks mitte midagi.*/
+
+UPDATE Emps SET ename=Upper(ename);
+/*Muudatus ei anna veateadet, kuid tabelis Emp ei muudeta ühtegi rida.*/
+
+/*is_insertable_into=YES ja is_updatable=NO*/
+
+CREATE OR REPLACE RULE emps_delete AS ON DELETE
+TO Emps
+DO INSTEAD NOTHING;
+/*Reegel, et vaatest ridade kustutamisel ei tehtaks mitte midagi.*/
+
+DELETE FROM Emps;
+/*Kustutamine ei anna veateadet, kuid tabelist Emp ei kustutata ühtegi rida.*/
+
+/*is_insertable_into=YES ja is_updatable=YES*/
