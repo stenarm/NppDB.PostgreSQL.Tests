@@ -173,8 +173,7 @@
   {
     "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr, id) IN (SELECT hotelli_nr, ruumi_nr FROM Reserveerimine);",
     "Errors": [
-      "SUBQUERY_COLUMN_COUNT_MISMATCH",
-      "NOT_LOGICAL_OPERAND" // should fix if we have time
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
     ]
   },
   {
@@ -244,17 +243,20 @@
     ]
   },
   {
-    "Query": "SELECT * FROM Hotell WHERE hotelli_nr = ALL (SELECT hotelli_nr FROM Reserveerimine)",
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr = ALL (SELECT hotelli_nr FROM Reserveerimine);",
     "Errors": [
-      "EQUALS_ALL",
-      "NOT_LOGICAL_OPERAND" // should fix if we have time
+      "EQUALS_ALL"
     ]
   },
   {
-    "Query": "SELECT * FROM Hotell WHERE hotelli_nr <> ANY (SELECT hotelli_nr FROM Reserveerimine)",
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr <> ANY (SELECT hotelli_nr FROM Reserveerimine);",
     "Errors": [
-      "NOT_EQUALS_ANY",
-      "NOT_LOGICAL_OPERAND" // should fix if we have time
+      "NOT_EQUALS_ANY"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Teenus WHERE nimetus IS NULL;",
+    "Errors": [
     ]
   }
 ]
