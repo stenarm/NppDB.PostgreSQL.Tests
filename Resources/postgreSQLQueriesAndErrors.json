@@ -1,6 +1,6 @@
 [
   {
-    "Query": "SELECT * FROM hotell where nimi = \"Viru\";",
+    "Query": "SELECT * FROM hotell WHERE nimi = \"Viru\";",
     "Errors": [
       "DOUBLE_QUOTES"
     ]
@@ -30,7 +30,17 @@
     ]
   },
   {
+    "Query": "SELECT hotelli_nr, ruumi_nr, Count(külalise_nr) as külalineCount from Reserveerimine;",
+    "Errors": [
+      "AGGREGATE_FUNCTION_WITHOUT_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
     "Query": "SELECT Hotell.hotelli_nr, nimi, Count(Reserveerimine.hotelli_nr) AS arv FROM Reserveerimine LEFT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr GROUP BY Hotell.hotelli_nr, nimi;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(*) AS arv FROM Reserveerimine LEFT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr GROUP BY Hotell.hotelli_nr, nimi;",
     "Errors": [
       "COUNT_FUNCTION_WITH_OUTER_JOIN"
     ]
@@ -61,7 +71,7 @@
     ]
   },
   {
-    "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING hind > 10;",
+    "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp HAVING hind > 10;",
     "Errors": [
       "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
     ]
@@ -69,7 +79,7 @@
   {
     "Query": "SELECT ruumi_tüüp, sum(hind) AS summa FROM ruum GROUP BY ruumi_tüüp, hind HAVING (linn='TALLINN' OR nimi='Tartu' AND hotelli_nr=2);",
     "Errors": [
-      "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE",
+      "AND_OR_MISSING_PARENTHESES_IN_HAVING_CLAUSE",
       "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
     ]
   },
@@ -107,7 +117,8 @@
   {
     "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine WHERE Count(*) > 1;",
     "Errors": [
-      "AGGREGATE_FUNCTION_IN_WHERE_CLAUSE"
+      "AGGREGATE_FUNCTION_IN_WHERE_CLAUSE",
+      "AGGREGATE_FUNCTION_WITHOUT_GROUP_BY_CLAUSE"
     ]
   },
   {
@@ -121,7 +132,7 @@
     "Errors": []
   },
   {
-    "Query": "SELECT nimi, 'ilus', linn FROM Hotell;",
+    "Query": "SELECT nimi, 'hotell', linn FROM Hotell;",
     "Errors": [
       "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
     ]
@@ -258,5 +269,81 @@
     "Query": "SELECT * FROM Teenus WHERE nimetus IS NULL;",
     "Errors": [
     ]
-  }
+  },
+  {
+    "Query": "SELECT * FROM Teenus WHERE nimetus IS NULL;;",
+    "Errors": [
+      "UNNECESSARY_SEMICOLON"
+    ]
+  },
+  {
+    "Query": ";",
+    "Errors": [
+      "UNNECESSARY_SEMICOLON"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum EXCEPT SELECT * FROM Ruum_koopia;",
+    "Errors": [
+      "SELECT_ALL_IN_UNION_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum EXCEPT ALL SELECT * FROM Ruum_koopia;",
+    "Errors": [
+      "SELECT_ALL_IN_UNION_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum INTERSECT SELECT * FROM Ruum_koopia;",
+    "Errors": [
+      "SELECT_ALL_IN_UNION_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum INTERSECT ALL SELECT * FROM Ruum_koopia;",
+    "Errors": [
+      "SELECT_ALL_IN_UNION_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT eesnimi, perenimi FROM Külaline ORDER BY 1, 2;",
+    "Errors": [
+      "ORDERING_BY_ORDINAL",
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn BETWEEN NULL AND NULL;",
+    "Errors": [
+      "EQUALITY_WITH_NULL"
+    ]
+  },
+  {
+    "Query": "SELECT 1 AS \"Nimi\";",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY arv;",
+    "Errors": [
+      "AGGREGATE_FUNCTION_IN_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE EXISTS (SELECT * FROM Reserveerimine);",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING hind > 10;",
+    "Errors": []
+  },
+
+
+  //{
+  //  "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY hotelli_nr HAVING count(*)>2;",
+  //  "Errors": []
+  //},
+  //{
+  //  "Query": "SELECT hotelli_nr, nimi, Count(*) AS arv FROM Hotell INNER JOIN Reserveerimine USING (hotelli_nr) GROUP BY hotelli_nr;",
+  //  "Errors": []
+  //}
 ]
