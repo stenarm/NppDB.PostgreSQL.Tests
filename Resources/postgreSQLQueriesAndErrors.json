@@ -336,6 +336,12 @@
     "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING hind > 10;",
     "Errors": []
   },
+  {
+    "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY hotelli_nr HAVING count(*)>2 AND HAVING count(*)<10;",
+    "Errors": [
+      "MULTIPLE_HAVING_USED"
+    ]
+  },
 
 
   //{
