@@ -40,7 +40,7 @@
     "Errors": []
   },
   {
-    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(*) AS arv FROM Reserveerimine LEFT JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr GROUP BY Hotell.hotelli_nr, nimi;",
+    "Query": "SELECT Hotell.hotelli_nr, nimi, Count(*) AS arv FROM Reserveerimine LEFT OUTER JOIN Hotell ON Hotell.hotelli_nr = Reserveerimine.hotelli_nr GROUP BY Hotell.hotelli_nr, nimi;",
     "Errors": [
       "COUNT_FUNCTION_WITH_OUTER_JOIN"
     ]
@@ -342,6 +342,12 @@
       "MULTIPLE_HAVING_USED"
     ]
   },
+  {
+    "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY hotelli_nr HAVING count(*)>2 OR HAVING count(*)<10;",
+    "Errors": [
+      "MULTIPLE_HAVING_USED"
+    ]
+  }
 
 
   //{
