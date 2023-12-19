@@ -433,5 +433,9 @@
   {
     "Query": "SELECT Count(*) AS arv FROM ( SELECT DISTINCT kommentaar FROM Reserveerimine ) alias;",
     "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell h, Reserveerimine r where r.hotelli_nr = h.hotelli_nr;",
+    "Errors": []
   }
 ]
