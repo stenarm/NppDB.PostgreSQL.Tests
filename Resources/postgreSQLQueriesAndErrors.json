@@ -309,7 +309,7 @@
   {
     "Query": "SELECT eesnimi, perenimi FROM Külaline ORDER BY 1, 2;",
     "Errors": [
-      "ORDERING_BY_ORDINAL",
+      "ORDERING_BY_ORDINAL"
     ]
   },
   {
@@ -351,15 +351,87 @@
   {
     "Query": "SELECT * FROM Hotell WHERE linn ILIKE 'linn';",
     "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell, Reserveerimine;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_JOIN_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell JOIN Reserveerimine ;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_JOIN_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Reserveerimine WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 1 ROW WITH TIES );",
+    "Errors": [
+      "FETCH_CLAUSE_MIGHT_RETURN_MULTIPLE_ROWS"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC LIMIT -1;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC LIMIT 5 OFFSET -1;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC OFFSET -5 FETCH FIRST 1 ROW ONLY;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC OFFSET 5 FETCH FIRST -1 ROW ONLY;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC FETCH FIRST -1 ROW ONLY;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC OFFSET 5 FETCH FIRST 1 ROW ONLY;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT külalise_nr FROM Reserveerimine ORDER BY külalise_nr DESC LIMIT 231;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT Max(hotelli_nr) AS suurim FROM Reserveerimine LIMIT 3;",
+    "Errors": [
+      "ONE_ROW_IN_RESULT_WITH_LIMIT"
+    ]
+  },
+  {
+    "Query": "SELECT Max(hotelli_nr) AS suurim FROM Reserveerimine FETCH FIRST 6 ROW ONLY;",
+    "Errors": [
+      "ONE_ROW_IN_RESULT_WITH_LIMIT"
+    ]
+  },
+  {
+    "Query": "SELECT Count(*) AS arv FROM ( SELECT DISTINCT kommentaar FROM Reserveerimine );",
+    "Errors": [
+      "MISSING_ALIAS_IN_FROM_SUBQUERY"
+    ]
+  },
+  {
+    "Query": "SELECT Count(*) AS arv FROM ( SELECT DISTINCT kommentaar FROM Reserveerimine ) AS alias;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT Count(*) AS arv FROM ( SELECT DISTINCT kommentaar FROM Reserveerimine ) alias;",
+    "Errors": []
   }
-
-
-  //{
-  //  "Query": "SELECT hotelli_nr, Count(*) AS arv FROM Reserveerimine GROUP BY hotelli_nr HAVING count(*)>2;",
-  //  "Errors": []
-  //},
-  //{
-  //  "Query": "SELECT hotelli_nr, nimi, Count(*) AS arv FROM Hotell INNER JOIN Reserveerimine USING (hotelli_nr) GROUP BY hotelli_nr;",
-  //  "Errors": []
-  //}
 ]
