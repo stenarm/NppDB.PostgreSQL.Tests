@@ -159,8 +159,7 @@
   {
     "Query": "SELECT ruumi_tüüp, hind FROM ruum GROUP BY ruumi_tüüp, hind HAVING;",
     "Errors": [
-      "MISSING_EXPRESSION_IN_HAVING_CLAUSE",
-      "HAVING_CLAUSE_WITHOUT_AGGREGATE_FUNCTION"
+      "MISSING_EXPRESSION_IN_HAVING_CLAUSE"
     ]
   },
   //{
@@ -411,13 +410,15 @@
   {
     "Query": "SELECT Max(hotelli_nr) AS suurim FROM Reserveerimine LIMIT 3;",
     "Errors": [
-      "ONE_ROW_IN_RESULT_WITH_LIMIT"
+      "ONE_ROW_IN_RESULT_WITH_LIMIT",
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
     ]
   },
   {
     "Query": "SELECT Max(hotelli_nr) AS suurim FROM Reserveerimine FETCH FIRST 6 ROW ONLY;",
     "Errors": [
-      "ONE_ROW_IN_RESULT_WITH_LIMIT"
+      "ONE_ROW_IN_RESULT_WITH_LIMIT",
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
     ]
   },
   {
@@ -437,5 +438,173 @@
   {
     "Query": "SELECT * FROM Hotell h, Reserveerimine r where r.hotelli_nr = h.hotelli_nr;",
     "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell ORDER BY nimi LIMIT 5;",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Hotell LIMIT 5;",
+    "Errors": [
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT Max(hotelli_nr) AS suurim FROM Reserveerimine LIMIT 1;",
+    "Errors": [
+      "ONE_ROW_IN_RESULT_WITH_LIMIT",
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Hotell WHERE hotelli_nr IN (SELECT hotelli_nr FROM Hotell LIMIT 100);",
+    "Errors": [
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT Max(hotelli_nr) AS suurim, Min(hotelli_nr) AS vahim FROM Reserveerimine FETCH FIRST 1 ROWS ONLY;",
+    "Errors": [
+      "ONE_ROW_IN_RESULT_WITH_LIMIT",
+      "AGGREGATE_FUNCTION_WITHOUT_GROUP_BY_CLAUSE",
+      "FETCH_LIMIT_OFFSET_CLAUSE_WITHOUT_ORDER_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "UPDATE Reserveerimine SET hind=hind+1 WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 1 ROW WITH TIES );",
+    "Errors": [
+      "FETCH_CLAUSE_MIGHT_RETURN_MULTIPLE_ROWS"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Reserveerimine WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 1 ROW WITH TIES );",
+    "Errors": [
+      "FETCH_CLAUSE_MIGHT_RETURN_MULTIPLE_ROWS"
+    ]
+  },
+  {
+    "Query": "INSERT INTO X(a, b) SELECT a, b FROM Ruum WHERE (hotelli_nr, ruumi_nr) IN ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "SELECT hotelli_nr, ruumi_nr FROM Ruum WHERE (hotelli_nr, ruumi_nr) IN ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine);",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "UPDATE Ruum SET hind=hind+2 WHERE (hotelli_nr, ruumi_nr) IN ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Ruum WHERE (hotelli_nr, ruumi_nr) IN ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell ORDER BY hotelli_nr LIMIT -0.5;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell ORDER BY hotelli_nr FETCH FIRST -0.5 ROWS ONLY;",
+    "Errors": [
+      "LIMIT_CONSTRAINT"
+    ]
+  },
+  {
+    "Query": "UPDATE ruum SET hind=hind+2 WHERE ( ruumi_tüüp='Äriklassi tuba' AND ruumi_tüüp='Luksusnumber' OR hotelli_nr=2 );",
+    "Errors": [
+      "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "DELETE FROM ruum WHERE ( ruumi_tüüp='Äriklassi tuba' AND ruumi_tüüp='Luksusnumber' OR hotelli_nr=2);",
+    "Errors": [
+      "AND_OR_MISSING_PARENTHESES_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Külaline WHERE külalise_nr IN ( SELECT * FROM Reserveerimine );",
+    "Errors": [
+      "SELECT_ALL_IN_SUB_QUERY"
+    ]
+  },
+  {
+    "Query": "UPDATE Külaline SET perenimi=Upper(perenimi) WHERE külalise_nr = ( SELECT * FROM Reserveerimine );",
+    "Errors": [
+      "SELECT_ALL_IN_SUB_QUERY"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Hotell WHERE hotelli_nr IN ( SELECT hotelli_nr FROM Reserveerimine ORDER BY hotelli_nr );",
+    "Errors": [
+      "ORDER_BY_CLAUSE_IN_SUB_QUERY_WITHOUT_LIMIT"
+    ]
+  },
+  {
+    "Query": "UPDATE Hotell SET linn=Upper(linn) WHERE hotelli_nr IN ( SELECT hotelli_nr FROM Reserveerimine ORDER BY hotelli_nr );",
+    "Errors": [
+      "ORDER_BY_CLAUSE_IN_SUB_QUERY_WITHOUT_LIMIT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr IN ( SELECT hotelli_nr FROM Reserveerimine ORDER BY hotelli_nr FETCH FIRST 1 ROW WITH TIES );",
+    "Errors": [
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp FROM Ruum WHERE GROUP BY ruumi_tüüp;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp FROM Ruum GROUP BY ruumi_tüüp HAVING ORDER BY ruumi_tüüp;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_HAVING_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT ruumi_tüüp FROM Ruum GROUP BY ruumi_tüüp HAVING LIMIT 1;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_HAVING_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT 1, 2+2 FROM Hotell;",
+    "Errors": [
+      "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT 1, 2*2 FROM Hotell;",
+    "Errors": [
+      "MISSING_COLUMN_ALIAS_IN_SELECT_CLAUSE"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr IN (SELECT DISTINCT hotelli_nr FROM Hotell GROUP BY hotelli_nr);",
+    "Errors": [
+      "DISTINCT_KEYWORD_WITH_GROUP_BY_CLAUSE"
+    ]
+  },
+  {
+    "Query": "DELETE FROM Hotell WHERE;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_WHERE_CLAUSE"
+    ]
+  },
+  {
+    "Query": "UPDATE Hotell SET nimi=nimi WHERE;",
+    "Errors": [
+      "MISSING_EXPRESSION_IN_WHERE_CLAUSE"
+    ]
   }
 ]
