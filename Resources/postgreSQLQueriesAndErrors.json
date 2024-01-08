@@ -606,5 +606,40 @@
     "Errors": [
       "MISSING_EXPRESSION_IN_WHERE_CLAUSE"
     ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE hotelli_nr IN (SELECT hotelli_nr FROM Ruum WHERE (hotelli_nr, ruumi_nr) IN ( SELECT hotelli_nr, ruumi_nr FROM Reserveerimine));",
+    "Errors": [
+    ]
+  },
+  {
+    "Query": "INSERT INTO X(a,b,c) SELECT 1*2 AS a, * FROM B;",
+    "Errors": [
+      "SELECT_ALL_IN_INSERT_STATEMENT"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr) <>ALL ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr) =ANY ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr) =SOME ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Ruum WHERE (hotelli_nr, ruumi_nr) NOT IN ( SELECT hotelli_nr, ruumi_nr, ruumi_tüüp FROM Reserveerimine );",
+    "Errors": [
+      "SUBQUERY_COLUMN_COUNT_MISMATCH"
+    ]
   }
 ]
