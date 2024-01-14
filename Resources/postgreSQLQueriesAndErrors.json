@@ -641,5 +641,35 @@
     "Errors": [
       "SUBQUERY_COLUMN_COUNT_MISMATCH"
     ]
+  },
+  {
+    "Query": "SELECT * FROM Hotell WHERE linn = 'Tallinn' OR 'Tartu' OR hind BETWEEN 8 AND 9;",
+    "Errors": [
+      "NOT_LOGICAL_OPERAND"
+    ]
+  },
+  {
+    "Query": "UPDATE Reserveerimine SET hind=hind+1 WHERE külalise_nr <>ALL ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 1 ROW WITH TIES);",
+    "Errors": []
+  },
+  {
+    "Query": "UPDATE Reserveerimine SET hind=hind+1 WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 1 ROW ONLY);",
+    "Errors": []
+  },
+  {
+    "Query": "UPDATE Reserveerimine SET hind=hind+1 WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC LIMIT 1);",
+    "Errors": []
+  },
+  {
+    "Query": "SELECT * FROM Reserveerimine WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC FETCH FIRST 2 ROWS ONLY);",
+    "Errors": [
+      "FETCH_CLAUSE_MIGHT_RETURN_MULTIPLE_ROWS"
+    ]
+  },
+  {
+    "Query": "SELECT * FROM Reserveerimine WHERE külalise_nr = ( SELECT külalise_nr FROM Reserveerimine GROUP BY külalise_nr ORDER BY Count(*) DESC LIMIT 2);",
+    "Errors": [
+      "FETCH_CLAUSE_MIGHT_RETURN_MULTIPLE_ROWS"
+    ]
   }
 ]
