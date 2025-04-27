@@ -53,7 +53,7 @@ namespace NppDB.PostgreSQL.Tests
                 ServerAddress = "127.0.0.1",
                 Port = _postgreSqlContainer.GetMappedPublicPort("5432").ToString()
             };
-            Comm.ISQLExecutor executor = connect.CreateSqlExecutor();
+            Comm.ISqlExecutor executor = connect.CreateSqlExecutor();
             using (var sr = new StreamReader("Resources/queries.sql"))
             {
                 String line;
