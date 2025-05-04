@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using NppDB.Comm;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +33,7 @@ namespace NppDB.PostgreSQL.Tests
                     foreach (QueryAndErrors queryAndErrors in queriesAndErrors)
                     {
                         output.WriteLine(queryAndErrors.ToString());
-                        Comm.ParserResult parserResult = executor.Parse(queryAndErrors.Query, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
+                        ParserResult parserResult = executor.Parse(queryAndErrors.Query, new CaretPosition { Line = 0, Column = 0, Offset = 0 });
                         List<String> warnings = new List<String>();
                         foreach (var command in parserResult.Commands)
                         {

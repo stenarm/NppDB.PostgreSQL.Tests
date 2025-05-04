@@ -1,21 +1,11 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Odbc;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
+using NppDB.Comm;
 using Testcontainers.PostgreSql;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NppDB.PostgreSQL.Tests
 {
@@ -53,7 +43,7 @@ namespace NppDB.PostgreSQL.Tests
                 ServerAddress = "127.0.0.1",
                 Port = _postgreSqlContainer.GetMappedPublicPort("5432").ToString()
             };
-            Comm.ISqlExecutor executor = connect.CreateSqlExecutor();
+            ISqlExecutor executor = connect.CreateSqlExecutor();
             using (var sr = new StreamReader("Resources/queries.sql"))
             {
                 String line;
@@ -61,14 +51,14 @@ namespace NppDB.PostgreSQL.Tests
                 {
                     if (!String.IsNullOrEmpty(line))
                     {
-                        Comm.ParserResult parserResult = executor.Parse(line, new Comm.CaretPosition { Line = 0, Column = 0, Offset = 0 });
+                        ParserResult parserResult = executor.Parse(line, new CaretPosition { Line = 0, Column = 0, Offset = 0 });
                         output.WriteLine(parserResult.Commands.Count.ToString());
                         var commands = parserResult.Commands.Select(c => c.Text).ToList();
-                        executor.Execute(commands, (results) =>
+                        executor.Execute(commands, results =>
                         {
                             foreach (var result in results)
                             {
-                                output.WriteLine(result.CommandText.ToString());
+                                output.WriteLine(result.CommandText);
                                 Assert.Null(result.Error);
                             }
                         });
