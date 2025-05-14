@@ -21,7 +21,7 @@ namespace NppDB.PostgreSQL.Tests
         [Fact]
         public void Test2()
         {
-            PostgreSQLExecutor executor = new PostgreSQLExecutor(null);
+            PostgreSqlExecutor executor = new PostgreSqlExecutor(null);
             List<string> sqlQueries = new List<string>();
 
             using (var sr = new StreamReader("Resources/postgreSQLQueriesAndErrors.json"))
